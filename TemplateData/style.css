@@ -1,59 +1,62 @@
-/* Page and browser viewport */
-html,
-body {
+/* Page */
+html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #231F20;
+    background: #000;
 }
 
-/*
-  Keep the complete Unity game viewport at 16:9.
-  The game is centered and letterboxed when the browser has
-  a wider or taller aspect ratio.
-*/
-#unity-container {
+/* Desktop: keep the game centered and scale it to fit the available window. */
+#unity-container.unity-desktop {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: min(100vw, 177.7778vh);
-    height: min(100vh, 56.25vw);
-    overflow: hidden;
-    background: #231F20;
+    width: min(100vw, calc((100vh - 38px) * 16 / 9));
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
-/* Prefer the dynamic viewport height on modern mobile browsers. */
-@supports (height: 100dvh) {
-    #unity-container {
-        width: min(100vw, 177.7778dvh);
-        height: min(100dvh, 56.25vw);
-    }
-}
-
+/* The canvas keeps its intrinsic 1920x1080 render resolution.
+   CSS only changes its displayed size. */
 #unity-canvas {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
     background: #231F20;
-    outline: none;
 }
 
+/* Mobile layout is kept as a full-browser canvas. */
+#unity-container.unity-mobile {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.unity-mobile #unity-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Loading UI */
 #unity-loading-bar {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     display: none;
-    z-index: 5;
+    z-index: 10;
 }
 
 #unity-logo {
     width: 154px;
     height: 130px;
-    background: url("unity-logo-dark.png") no-repeat center;
+    background: url('unity-logo-dark.png') no-repeat center;
 }
 
 #unity-progress-bar-empty {
@@ -61,14 +64,50 @@ body {
     height: 18px;
     margin-top: 10px;
     margin-left: 6.5px;
-    background: url("progress-bar-empty-dark.png") no-repeat center;
+    background: url('progress-bar-empty-dark.png') no-repeat center;
 }
 
 #unity-progress-bar-full {
     width: 0%;
     height: 18px;
     margin-top: 10px;
-    background: url("progress-bar-full-dark.png") no-repeat center;
+    background: url('progress-bar-full-dark.png') no-repeat center;
+}
+
+/* Footer */
+#unity-footer {
+    position: relative;
+    flex: 0 0 38px;
+    height: 38px;
+    width: 100%;
+}
+
+.unity-mobile #unity-footer {
+    display: none;
+}
+
+#unity-logo-title-footer {
+    float: left;
+    width: 102px;
+    height: 38px;
+    background: url('unity-logo-title-footer.png') no-repeat center;
+}
+
+#unity-build-title {
+    float: right;
+    margin-right: 10px;
+    line-height: 38px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: #fff;
+}
+
+#unity-fullscreen-button {
+    cursor: pointer;
+    float: right;
+    width: 38px;
+    height: 38px;
+    background: url('fullscreen-button.png') no-repeat center;
 }
 
 #unity-warning {
@@ -79,38 +118,30 @@ body {
     background: white;
     padding: 10px;
     display: none;
-    z-index: 10;
-    max-width: 90%;
-    box-sizing: border-box;
+    z-index: 20;
 }
 
-/* Desktop footer remains available, positioned over the game viewport. */
-#unity-footer {
-    position: absolute;
-    right: 8px;
-    bottom: 8px;
-    z-index: 6;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+/* On narrow desktop windows, keep the footer compact and the game visible. */
+@media (max-height: 500px) {
+    #unity-container.unity-desktop {
+        width: min(100vw, calc((100vh - 30px) * 16 / 9));
+    }
 
-#unity-logo-title-footer {
-    display: none;
-}
+    #unity-footer {
+        flex-basis: 30px;
+        height: 30px;
+    }
 
-#unity-build-title {
-    display: none;
-}
+    #unity-logo-title-footer {
+        height: 30px;
+    }
 
-#unity-fullscreen-button {
-    cursor: pointer;
-    width: 38px;
-    height: 38px;
-    background: url("fullscreen-button.png") no-repeat center;
-}
+    #unity-build-title {
+        line-height: 30px;
+        font-size: 14px;
+    }
 
-/* Hide the template footer on mobile, as in the original template. */
-#unity-container.unity-mobile #unity-footer {
-    display: none;
+    #unity-fullscreen-button {
+        height: 30px;
+    }
 }
